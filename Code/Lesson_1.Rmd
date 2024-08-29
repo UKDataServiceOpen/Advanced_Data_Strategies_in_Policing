@@ -1,0 +1,104 @@
+---
+title: "Using Forecasting to Understand Change Caused by Major Events"
+output: html_document
+date: "2024-08-29"
+---
+
+```{r install and load packages}
+install.packages("readr")
+
+library(readr)
+library(dplyr)
+library(lubridate)
+library(forecast)
+library(fable)
+library(tsibble)
+library(readr)
+library(janitor)
+library(ggplot2)
+```
+
+```{r load datasets}
+calls <- read_csv("Data/combined_cheshire_street_data.csv") 
+calls <- calls %>% clean_names()
+head(calls)
+```
+
+# Categorise Incidents
+
+```{r lets prepare the data briefly}
+minor_categories <- calls %>% 
+  count(crime_type) %>% 
+  filter(n < 1000) %>% 
+  pull(crime_type)
+
+calls %>% 
+  filter(crime_type %in% c("Drugs")) %>% 
+  mutate(week = as_date(yearweek(month))) %>% 
+  count(week)
+
+calls %>% 
+  mutate(crime_type_new = case_when(
+    crime_type %in% c(
+      "Assistance to Other Agencies",
+      "CRB Use Only",
+      "CSI To Be Informed",
+      "External System",
+      "Found Stolen Vehicle",
+      "Message to Pass/OOF Enquiries",
+      "PNC Markers",
+      "Police Vehicle Recovery",
+      "Pre-Planned Events",
+      "Stop Search",
+      "Training"
+    ) ~ "other - admin",
+    crime_type %in% c(
+      "Alarm - Activation", 
+      "Alarm - No Response", 
+      "Audible Only Alarm",
+      "Insecure Premises",
+      "Police Installed Alarm",
+      "Unauthorised Encampment"
+    ) ~ "alarms",
+    crime_type %in% c(
+      "Bail Breaches/Wanted Person",
+      "Bail/Curfew/Wanted",
+      "Prison Licence Recall",
+      "Warrant Crown Court"
+    ) ~ "warrant/bail issue",
+    crime_type %in% c("Domestic Animal Concern", "Wildlife Matters") ~ 
+      "animals",
+    crime_type %in% c(
+      "Firearms - Non Notifiable Crime",
+      "Firearms Involved Crime"
+    ) ~ "firearms",
+    crime_type %in% c("RTC", "RTC - Damage Only") ~ "traffic collision",
+    crime_type %in% minor_categories ~ "other - minor",
+    TRUE ~ crime_type
+  )) %>% 
+  count(crime_type_new) %>% 
+  View(title = "crime_type_new")
+
+
+calls %>% 
+  filter(crime_type %in% c("Drugs")) %>% 
+  mutate(week = as_date(yearweek(month))) %>% 
+  count(week) %>% 
+  ggplot(aes(x = week, y = n)) +
+  geom_point() +
+  geom_smooth(formula = y ~ x, method = "loess", span = 0.2) +
+  # First UK case
+  geom_vline(xintercept = as.Date("2020-01-23"), linetype = "33") +
+  # First UK lockdown begins
+  geom_vline(xintercept = as.Date("2020-03-23"), linetype = "12") +
+  # First UK lockdown ends
+  geom_vline(xintercept = as.Date("2020-06-01"), linetype = "42") +
+  scale_x_date(date_breaks = "6 months", date_labels = "%b\n%Y") +
+  scale_y_continuous(limits = c(0, NA), labels = scales::comma_format()) +
+  theme_minimal()
+
+```
+
+
+
+
