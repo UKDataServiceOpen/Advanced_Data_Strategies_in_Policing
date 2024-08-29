@@ -6,3 +6,7 @@ dependencies:
   - r-desctools
   - r-lsr
   - r-ggplot2
+  - r-irkernel  # To enable R kernel in Jupyter Notebooks
+  - r-devtools  # Useful for package development (optional)
+  - r-ggpubr    # Additional ggplot2 functions (optional)
+  - r-data.table # For enhanced data manipulation (optional)
