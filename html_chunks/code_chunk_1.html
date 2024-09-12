@@ -3,37 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebR Code Chunk 1</title>
+    <title>Quick WebR Code Chunk</title>
     <script src="https://webr.r-wasm.org/latest/webr.mjs" type="module"></script>
 </head>
 <body>
-    <h3>Code Chunk 1: Simple R Code</h3>
+    <h3>Code Chunk: Simple R Calculation</h3>
     <pre id="output"></pre>
+
+    <button id="run-code">Run Code</button>
 
     <script type="module">
         import { WebR } from "https://webr.r-wasm.org/latest/webr.mjs";
 
-        // Define an async function to properly handle 'await'
-        async function runWebRCode() {
-            const webr = new WebR();
-            await webr.init();
+        const webr = new WebR();
+        await webr.init();
 
-            // Define the R code to run
+        document.getElementById("run-code").addEventListener("click", async () => {
             const code = `
-               x <- 5 
-               print(x)
+                x <- 1:10
+                sum(x)
             `;
 
-            // Evaluate the R code
             const result = await webr.evalR(code);
-
-            // Properly handle the output stream
-            const output = await result.stream().fetch();
-            document.getElementById("output").textContent = output.join('\n');
-        }
-
-        // Call the async function
-        runWebRCode();
+            document.getElementById("output").textContent = result.output_value();
+        });
     </script>
 </body>
 </html>
