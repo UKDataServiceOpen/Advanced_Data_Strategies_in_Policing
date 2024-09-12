@@ -26,7 +26,7 @@
 
             // Evaluate the R code
             const result = await webr.evalR(code);
-            document.getElementById("output").textContent = result.output_value();
+            document.getElementById("output").textContent = result.stream().toString();
         }
 
         // Call the async function
