@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebR Code Chunk 1</title>
+    <script src="https://webr.r-wasm.org/latest/webr.mjs" type="module"></script>
+</head>
+<body>
+    <h3>Code Chunk 1: Install and Load Packages</h3>
+    <pre id="output"></pre>
+
+    <script type="module">
+        import { WebR } from "https://webr.r-wasm.org/latest/webr.mjs";
+
+        const webr = new WebR();
+        await webr.init();
+
+        const code = `
+            install.packages(c("readr", "dplyr", "lubridate", "forecast", "fable", "tsibble", "janitor", "ggplot2", "IRkernel"))
+lapply(c("readr", "dplyr", "lubridate", "forecast", "fable", "tsibble", "janitor", "ggplot2", "IRkernel"), library, character.only = TRUE)
+
+        `;
+
+        const result = await webr.evalR(code);
+        document.getElementById("output").textContent = result.output_value();
+    </script>
+</body>
+</html>
