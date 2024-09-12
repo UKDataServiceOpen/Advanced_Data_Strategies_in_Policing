@@ -20,8 +20,9 @@
 
         document.getElementById("run-code").addEventListener("click", async () => {
             const code = `
-                x <- 1:10
-                sum(x)
+                install.packages(c("readr", "dplyr", "lubridate", "forecast", "fable", "tsibble", "janitor", "ggplot2", "IRkernel"))
+lapply(c("readr", "dplyr", "lubridate", "forecast", "fable", "tsibble", "janitor", "ggplot2", "IRkernel"), library, character.only = TRUE)
+
             `;
 
             const result = await webr.evalR(code);
