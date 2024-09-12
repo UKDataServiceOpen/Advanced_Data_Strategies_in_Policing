@@ -26,7 +26,10 @@
 
             // Evaluate the R code
             const result = await webr.evalR(code);
-            document.getElementById("output").textContent = result.stream().toString();
+
+            // Properly handle the output stream
+            const output = await result.stream().fetch();
+            document.getElementById("output").textContent = output.join('\n');
         }
 
         // Call the async function
@@ -34,3 +37,4 @@
     </script>
 </body>
 </html>
+
