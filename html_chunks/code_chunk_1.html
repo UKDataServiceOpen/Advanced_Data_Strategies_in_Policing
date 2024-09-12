@@ -7,23 +7,30 @@
     <script src="https://webr.r-wasm.org/latest/webr.mjs" type="module"></script>
 </head>
 <body>
-    <h3>Code Chunk 1: Install and Load Packages</h3>
+    <h3>Code Chunk 1: Simple R Code</h3>
     <pre id="output"></pre>
 
     <script type="module">
         import { WebR } from "https://webr.r-wasm.org/latest/webr.mjs";
 
-        const webr = new WebR();
-        await webr.init();
+        // Define an async function to properly handle 'await'
+        async function runWebRCode() {
+            const webr = new WebR();
+            await webr.init();
 
-        const code = `
-           x <- 5 
-           print(x)
+            // Define the R code to run
+            const code = `
+               x <- 5 
+               print(x)
+            `;
 
-        `;
+            // Evaluate the R code
+            const result = await webr.evalR(code);
+            document.getElementById("output").textContent = result.output_value();
+        }
 
-        const result = await webr.evalR(code);
-        document.getElementById("output").textContent = result.output_value();
+        // Call the async function
+        runWebRCode();
     </script>
 </body>
 </html>
